@@ -166,15 +166,35 @@
 
     // Minor Diagonals - go from top-right to bottom-left
     // --------------------------------------------------------------
-    // 
+    //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow){
-      return false; // fixme
+      var rowIndex = 0;
+      var colIndex = minorDiagonalColumnIndexAtFirstRow;
+      var length = this.get(0).length;
+
+      while(colIndex > length-1) {
+        rowIndex++;
+        colIndex--;
+      }
+
+      var count = 0;
+      //step down the chessboard down/right at each step
+      for(rowIndex; rowIndex < length && colIndex >= 0 ; rowIndex++, colIndex--) {
+        count += this.get(rowIndex)[colIndex];
+      }
+      return count > 1;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function(){
-      return false; // fixme
+      var length = this.get(0).length;
+      for(var i = 0; i < 2*length-1; i++) {
+        if(this.hasMinorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
