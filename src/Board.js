@@ -214,8 +214,17 @@
       }
 
       return openSpaces;
-    }
+    },
 
+    copySelf: function() {
+      var newBoard = new Board();
+      // newBoard['n'] = this.get('n')
+      var length = this.get(0).length;
+      for(var i = 0; i < length; i++) {
+        newBoard.attributes[i] = this.get(i).slice(0);
+      }
+      return newBoard;
+    }
     /*--------------------  End of Helper Functions  ---------------------*/
 
 
