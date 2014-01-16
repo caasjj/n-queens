@@ -81,21 +81,21 @@
     hasRowConflictAt: function(rowIndex){
       var row = this.get(rowIndex);
       var count = 0;
-      for(var i=0; i<row.length; i++) {
+      for(var i = 0; i < row.length; i++) {
         count += row[i];
       }
-      return count > 1; // fixme
+      return (count > 1);
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function(){
-      var size = this.get('n');
-      for(var i=0; i<size; i++) {
-        if (this.hasRowConflictAt( i )) {
+      var length = this.get(0).length;
+      for(var row = 0; row < length; row++) {
+        if(this.hasRowConflictAt(row)){
           return true;
         }
       }
-      return false; // fixme
+      return false;
     },
 
 
@@ -105,23 +105,24 @@
     // 
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex){
-      var row = this.get(0);
-      var count = row[colIndex];
-      for(var i=1; i<row.length; i++) {
-        count += this.get(i)[colIndex];
+      var length = this.get('n');
+      var count = 0;
+      if(!(this._isInBounds(0, colIndex)) ) return;
+      for(var row=0; row < length; row++) {
+        count+=this.get(row)[colIndex];
       }
       return count > 1; // fixme
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function(){
-      var size = this.get('n');
-      for(var i=0; i<size; i++) {
-        if (this.hasColConflictAt( i )) {
+      var length = this.get(0).length;
+      for(var col = 0; col < length; col++) {
+        if(this.hasColConflictAt(col)){
           return true;
         }
       }
-      return false; // fixme
+      return false;
     },
 
 
@@ -131,57 +132,153 @@
     // 
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow){
-      var size = this.get('n');
-      var count = this.get(0)[majorDiagonalColumnIndexAtFirstRow];
-      var dim = size - majorDiagonalColumnIndexAtFirstRow;
-      for(var row = 1; row < dim; row++) {
-         if (this._isInBounds(row, row + majorDiagonalColumnIndexAtFirstRow)) {
-          count += this.get(row)[row + majorDiagonalColumnIndexAtFirstRow];
-        }
+      var rowIndex = 0;
+      var colIndex = majorDiagonalColumnIndexAtFirstRow;
+      var length = this.get(0).length;
+
+      while(colIndex < 0) {
+        rowIndex++;
+        colIndex++;
       }
-      return count > 1; // fixme
+
+      var count = 0;
+      //step down the cheseboard down/right at each step
+      // debugger;
+      for(rowIndex; rowIndex < length && colIndex < length; rowIndex++, colIndex++) {
+        count += this.get(rowIndex)[colIndex];
+      }
+      return count > 1;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function(){
-      var size = this.get('n');
-      for(var i=0; i<size; i++) {
-        if (this.hasMajorDiagonalConflictAt( i )) {
+      var length = this.get(0).length;
+      var start = length * -1 +1;
+      for(var i = start; i < length; i++) {
+        if(this.hasMajorDiagonalConflictAt(i)) {
           return true;
         }
       }
-      return false; // fixme
+      return false;
     },
 
 
 
     // Minor Diagonals - go from top-right to bottom-left
     // --------------------------------------------------------------
-    // 
+    //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow){
-      var size = this.get('n');
-      var count = this.get(0)[minorDiagonalColumnIndexAtFirstRow];
-      var dim =  minorDiagonalColumnIndexAtFirstRow + 1;
-      for(var row = 1; row < dim; row++) {
-         if (this._isInBounds(row, minorDiagonalColumnIndexAtFirstRow - row)) {
-          count += this.get(row)[minorDiagonalColumnIndexAtFirstRow - row];
-        }
+      var rowIndex = 0;
+      var colIndex = minorDiagonalColumnIndexAtFirstRow;
+      var length = this.get(0).length;
+
+      while(colIndex > length-1) {
+        rowIndex++;
+        colIndex--;
       }
-      return count > 1; // fixme
+
+      var count = 0;
+      //step down the chessboard down/right at each step
+      for(rowIndex; rowIndex < length && colIndex >= 0 ; rowIndex++, colIndex--) {
+        count += this.get(rowIndex)[colIndex];
+      }
+      return count > 1;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function(){
-      var size = this.get('n');
-      for(var i=0; i<size; i++) {
-        if (this.hasMinorDiagonalConflictAt( i )) {
+      var length = this.get(0).length;
+      for(var i = 0; i < 2*length-1; i++) {
+        if(this.hasMinorDiagonalConflictAt(i)) {
           return true;
         }
       }
-      return false; // fixme
-    }
+      return false;
+    },
 
+    addRook: function(rowIndex, colIndex, openSpaces) {
+      // usage: openSpaces = board.addRook(row, col, openSpaces)
+      if(!(this._isInBounds(rowIndex, colIndex))) {
+        throw( 'Rook Location Out of Bounds');
+      }
+      if(this.get(rowIndex)[colIndex] !== 0) {
+        throw( 'Rook Location Already Occupied');
+      }
+      this.get(rowIndex)[colIndex] = 1;
+      var length = this.get(0).length;
+
+      for(var i=0; i<length; i++) {
+        openSpaces.get(rowIndex)[i] = 1;
+        openSpaces.get(i)[colIndex] = 1;
+      }
+
+      return openSpaces;
+    },
+
+    addQueen: function(rowIndex, colIndex, openSpaces) {
+      if(!(this._isInBounds(rowIndex, colIndex))) {
+        throw( 'Queen Location Out of Bounds');
+      }
+      if(this.get(rowIndex)[colIndex] !== 0) {
+        throw( 'Queen Location Already Occupied');
+      }
+
+      this.get(rowIndex)[colIndex] = 1;
+      var length = this.get(0).length;
+      for(var i=0; i<length; i++) {
+        //clear horizontal and vertical open space
+        openSpaces.get(rowIndex)[i] = 1;
+        openSpaces.get(i)[colIndex] = 1;
+
+        //check top/right
+        if(this._isInBounds(rowIndex-i, colIndex+i)) {
+          openSpaces.get(rowIndex-i)[colIndex+i] = 1;
+        }
+
+        //check top/left
+        if(this._isInBounds(rowIndex-i, colIndex-i)) {
+          openSpaces.get(rowIndex-i)[colIndex-i] = 1;
+        }
+
+        //check bottom/right
+        if(this._isInBounds(rowIndex+i, colIndex+i)) {
+          openSpaces.get(rowIndex+i)[colIndex+i] = 1;
+        }
+
+        //check bottom/left
+        if(this._isInBounds(rowIndex+i, colIndex-i)) {
+          openSpaces.get(rowIndex+i)[colIndex-i] = 1;
+        }
+      }
+
+      return openSpaces;
+    },
+
+    copySelf: function() {
+      var length = this.get(0).length;
+      var newBoard = new Board({n: length});
+      // newBoard['n'] = this.get('n')
+      for(var i = 0; i < length; i++) {
+        newBoard.attributes[i] = this.get(i).slice(0);
+      }
+      return newBoard;
+    },
+
+    formatResult: function(toString) {
+      toString = toString || false;
+
+      var length = this.get(0).length;
+      var result = [];
+      for(var n=0; n<length; n++) {
+        if(toString) {
+          result.push( this.get(n).join(''));
+        } else {
+          result.push( this.get(n) );
+        }
+      }
+      return result;
+    }
     /*--------------------  End of Helper Functions  ---------------------*/
 
 
