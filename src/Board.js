@@ -195,6 +195,25 @@
         }
       }
       return false;
+    },
+
+    addRook: function(rowIndex, colIndex, openSpaces) {
+      // usage: openSpaces = board.addRook(row, col, openSpaces)
+      if(!(this._isInBounds(rowIndex, colIndex))) {
+        throw( 'Rook Location Out of Bounds');
+      }
+      if(this.get(rowIndex)[colIndex] !== 0) {
+        throw( 'Rook Location Already Occupied');
+      }
+      this.get(rowIndex)[colIndex] = 1;
+      var length = this.get(0).length;
+
+      for(var i=0; i<length; i++) {
+        openSpaces.get(rowIndex)[i] = 1;
+        openSpaces.get(i)[rowIndex] = 1;
+      }
+
+      return openSpaces;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
