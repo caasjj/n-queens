@@ -216,6 +216,45 @@
       return openSpaces;
     },
 
+    addQueen: function(rowIndex, colIndex, openSpaces) {
+      if(!(this._isInBounds(rowIndex, colIndex))) {
+        throw( 'Queen Location Out of Bounds');
+      }
+      if(this.get(rowIndex)[colIndex] !== 0) {
+        throw( 'Queen Location Already Occupied');
+      }
+
+      this.get(rowIndex)[colIndex] = 1;
+      var length = this.get(0).length;
+      for(var i=0; i<length; i++) {
+        //clear horizontal and vertical open space
+        openSpaces.get(rowIndex)[i] = 1;
+        openSpaces.get(i)[colIndex] = 1;
+
+        //check top/right
+        if(this._isInBounds(rowIndex-i, colIndex+1)) {
+          openSpaces.get(rowIndex-i)[colIndex+i] = 1;
+        }
+
+        //check top/left
+        if(this._isInBounds(rowIndex-i, colIndex-i)) {
+          openSpaces.get(rowIndex-i)[colIndex-i] = 1;
+        }
+
+        //check bottom/right
+        if(this._isInBounds(rowIndex+i, colIndex+i)) {
+          openSpaces.get(rowIndex+i)[colIndex+i] = 1;
+        }
+
+        //check bottom/left
+        if(this._isInBounds(rowIndex+i, colIndex-i)) {
+          openSpaces.get(rowIndex+i)[colIndex-i] = 1;
+        }
+      }
+
+      return openSpaces;
+    },
+
     copySelf: function() {
       var length = this.get(0).length;
       var newBoard = new Board({n: length});
