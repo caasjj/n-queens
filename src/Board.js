@@ -210,20 +210,35 @@
 
       for(var i=0; i<length; i++) {
         openSpaces.get(rowIndex)[i] = 1;
-        openSpaces.get(i)[rowIndex] = 1;
+        openSpaces.get(i)[colIndex] = 1;
       }
 
       return openSpaces;
     },
 
     copySelf: function() {
-      var newBoard = new Board();
-      // newBoard['n'] = this.get('n')
       var length = this.get(0).length;
+      var newBoard = new Board({n: length});
+      // newBoard['n'] = this.get('n')
       for(var i = 0; i < length; i++) {
         newBoard.attributes[i] = this.get(i).slice(0);
       }
       return newBoard;
+    },
+
+    formatResult: function(toString) {
+      toString = toString || false;
+
+      var length = this.get(0).length;
+      var result = [];
+      for(var n=0; n<length; n++) {
+        if(toString) {
+          result.push( this.get(n).join(''));
+        } else {
+          result.push( this.get(n) );
+        }
+      }
+      return result;
     }
     /*--------------------  End of Helper Functions  ---------------------*/
 
