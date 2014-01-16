@@ -135,7 +135,9 @@
       var count = this.get(0)[majorDiagonalColumnIndexAtFirstRow];
       var dim = size - majorDiagonalColumnIndexAtFirstRow;
       for(var row = 1; row < dim; row++) {
+         if (this._isInBounds(row, row + majorDiagonalColumnIndexAtFirstRow)) {
           count += this.get(row)[row + majorDiagonalColumnIndexAtFirstRow];
+        }
       }
       return count > 1; // fixme
     },
@@ -162,7 +164,9 @@
       var count = this.get(0)[minorDiagonalColumnIndexAtFirstRow];
       var dim =  minorDiagonalColumnIndexAtFirstRow + 1;
       for(var row = 1; row < dim; row++) {
+         if (this._isInBounds(row, minorDiagonalColumnIndexAtFirstRow - row)) {
           count += this.get(row)[minorDiagonalColumnIndexAtFirstRow - row];
+        }
       }
       return count > 1; // fixme
     },
