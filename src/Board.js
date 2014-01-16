@@ -232,7 +232,7 @@
         openSpaces.get(i)[colIndex] = 1;
 
         //check top/right
-        if(this._isInBounds(rowIndex-i, colIndex+1)) {
+        if(this._isInBounds(rowIndex-i, colIndex+i)) {
           openSpaces.get(rowIndex-i)[colIndex+i] = 1;
         }
 
